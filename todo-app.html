@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Todo App</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial;background:#080b12;color:#fff;display:flex;justify-content:center;padding:40px 15px}
+.app{width:100%;max-width:500px;background:#111722;padding:25px;border-radius:18px}
+h1{margin-top:0}
+.row{display:flex;gap:8px}
+input{flex:1;padding:13px;border:0;border-radius:10px;background:#202938;color:#fff}
+button{border:0;border-radius:10px;padding:12px 16px;cursor:pointer;background:#6ea8ff;color:#07101f;font-weight:bold}
+ul{list-style:none;padding:0}
+li{display:flex;align-items:center;gap:10px;background:#1a2230;padding:12px;margin-top:10px;border-radius:10px}
+li span{flex:1}
+.done{text-decoration:line-through;opacity:.5}
+.del{background:#ff6b6b;padding:7px 10px}
+</style>
+</head>
+<body>
+<div class="app">
+<h1>Todo App</h1>
+<div class="row">
+<input id="task" placeholder="Add a task...">
+<button onclick="addTask()">Add</button>
+</div>
+<ul id="list"></ul>
+</div>
+
+<script>
+const input=document.getElementById("task");
+const list=document.getElementById("list");
+let tasks=JSON.parse(localStorage.getItem("tasks")||"[]");
+
+function save(){localStorage.setItem("tasks",JSON.stringify(tasks))}
+function render(){
+ list.innerHTML="";
+ tasks.forEach((t,i)=>{
+  const li=document.createElement("li");
+  li.innerHTML=`<input type="checkbox" ${t.done?"checked":""} onchange="toggle(${i})">
+  <span class="${t.done?"done":""}">${t.text}</span>
+  <button class="del" onclick="removeTask(${i})">×</button>`;
+  list.appendChild(li);
+ });
+}
+function addTask(){
+ const text=input.value.trim();
+ if(!text)return;
+ tasks.push({text,done:false});
+ input.value="";save();render();
+}
+function toggle(i){tasks[i].done=!tasks[i].done;save();render()}
+function removeTask(i){tasks.splice(i,1);save();render()}
+input.addEventListener("keydown",e=>{if(e.key==="Enter")addTask()});
+render();
+</script>
+</body>
+</html>
